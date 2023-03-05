@@ -14,7 +14,7 @@ import { Stream } from 'stream'
 
 dotenv.config()
 
-const PORT = 3080
+const PORT = 8080
 const DB_URL = `mongodb+srv://danil8665:3edc4rfv@cluster0.dh2l5no.mongodb.net/?retryWrites=true&w=majority`
 const BUCKET = 'my-first-bucket-for-project'
 
@@ -58,7 +58,7 @@ app.get('/image', (req, res) => {
   const upload = multer({ storage: storage });
   
 
-  app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
 
     const myObject = JSON.parse(req.body.product);
 
@@ -96,42 +96,7 @@ app.get('/image', (req, res) => {
         const {manufacturer, name, price, discount, rate} = myObject
         const product = await Product.create({manufacturer, name, price, discount, rate, picture: url})
         res.json(product)
-  });
-
-// app.post('/upload', upload.single('file'), async (req, res) => {
-    
-//     let s3 = new AWS.S3({
-//         region: "us-east-1",
-//         accessKeyId: "AKIA2CPC77OVWYJ3S25E",
-//         secretAccessKey: "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",
-//     })
-
-//     const storage = multer.memoryStorage()
-//     const file = multer({storage: storage})
-//     console.log("req.body", req.body)
-//     console.log("req.file", req.file)
-
-//     const { pic, type } = req.body.picture.file;
-//     const fileKey = `123/${v4(pic)}.${type.split('/')[1]}`;
-//     const params = {
-//         Bucket: BUCKET,
-//         Key: fileKey,
-//         Body: file,
-//         ContentType: type,
-//     };
-
-//     const result = await s3.upload(params).promise()
-//     console.log(`File uploaded successfully to ${result.Location}`);
-//     const url = s3.getSignedUrl('getObject', {
-//         Bucket: BUCKET,
-//         Key: fileKey
-//     })
-            
-//     const {manufacturer, name, price, discount, rate} = req.body
-//     const product = await Product.create({manufacturer, name, price, discount, rate, picture: url})
-//     res.json(product)
-// })
-
+});
 
 app.get('/products', async (req, res) => {
     const products = await Product.find()
