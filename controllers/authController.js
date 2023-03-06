@@ -7,35 +7,6 @@ import dotenv from "dotenv"
 import router from '../routes/authRoute.js'
 dotenv.config()
 
-
-
-export const register = async (req, res) => {
-   try {
-       const { username, password } = req.body
-
-       const isUsed = await User.findOne({ username })
-
-       if (isUsed) {
-           return res.json({
-               message: 'Данный username уже занят.',
-           })
-       }
-
-       const salt = await bcrypt.genSalt(10)
-       const hash = await bcrypt.hash(password, salt)
-       const userRole = await Role.findOne({value: "USER"})
-
-       const newUser = await User.create({username, password: hash, role: userRole.value})
-       res.json({
-           newUser,
-           message: 'Регистрация прошла успешно.',
-       })
-   } catch (error) {
-       res.json({ message: 'Ошибка при создании пользователя.' })
-       console.log(error)
-   }
-}
-
 export const login = async (req, res) => {
    try {
        const { username, password } = req.body
@@ -73,12 +44,36 @@ export const login = async (req, res) => {
 
        
    } catch (error) {
-       res.json({ message: 'Ошибка при авторизации.' })
-       
-       
+       res.json({ message: 'Ошибка при авторизации.' })   
    }
 }
 
+export const register = async (req, res) => {
+    try {
+        const { username, password } = req.body
+ 
+        const isUsed = await User.findOne({ username })
+ 
+        if (isUsed) {
+            return res.json({
+                message: 'Данный username уже занят.',
+            })
+        }
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(password, salt)
+        const userRole = await Role.findOne({value: "USER"})
+ 
+        const newUser = await User.create({username, password: hash, role: userRole.value})
+        res.json({
+            newUser,
+            message: 'Регистрация прошла успешно.',
+        })
+    } 
+    catch (error) {
+        res.json({ message: 'Ошибка при создании пользователя.' })
+        console.log(error)
+    }
+ }
 
  export const getMe = async (req, res) => {
     try{
@@ -99,28 +94,41 @@ export const login = async (req, res) => {
         { expiresIn: '6h' },
 
     )
-    res.json({
-        user,
-        token, 
-    })
+    res.json({ user, token });
     }
     catch(error) {
       res.json({ message: 'Нет доступа' })
       console.log(error.message)
     }
- } 
+}
 
 
+//  export const getMe = async (req, res) => {
+//     try{
+     
+//       const user = await User.findById(req.userId)
+//       if (!user) {
+//          return res.json({
+//              message: 'Такого юзера не существует.',
+//          })
+//      }
 
+//      const token = jwt.sign(
+//         {
+//             id: user._id,
+//             role: user.role
+//         },
+//         ''+ process.env.JWT_KEY,
+//         { expiresIn: '6h' },
 
-
-
-
-
-//  export const getProucts = async (req, res) => {
-//     try {
-//         const product = await Product.find()
-//     } catch (error) {
-//         res.json({ message: 'Ошибка' })
+//     )
+//     res.json({
+//         user,
+//         token, 
+//     })
 //     }
-//  }
+//     catch(error) {
+//       res.json({ message: 'Нет доступа' })
+//       console.log(error.message)
+//     }
+//  } 
